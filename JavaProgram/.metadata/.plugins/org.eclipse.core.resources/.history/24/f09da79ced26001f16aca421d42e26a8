@@ -1,0 +1,10 @@
+package sec04_filterinputoutputstream.EX03_CombineFilterStream;
+
+public class CombineFilterStream {
+
+	public static void main(String[] args) {
+		// TODO Auto-generated method stub
+
+	}
+
+}

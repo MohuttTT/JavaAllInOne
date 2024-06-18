@@ -1,0 +1,10 @@
+package sec03_consoleinputoutput.EX03_ConsoleInputObject_3;
+
+public class ConsoleInputObject_3 {
+
+	public static void main(String[] args) {
+		// TODO Auto-generated method stub
+
+	}
+
+}

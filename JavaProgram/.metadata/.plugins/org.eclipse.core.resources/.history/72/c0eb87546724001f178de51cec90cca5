@@ -1,0 +1,10 @@
+package sec01_lambdaexpression.EX05_RefOfStaticMethod;
+
+public class RefOfStaticMethod {
+
+	public static void main(String[] args) {
+		// TODO Auto-generated method stub
+
+	}
+
+}

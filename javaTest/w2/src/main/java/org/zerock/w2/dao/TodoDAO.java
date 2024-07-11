@@ -11,7 +11,7 @@ public class TodoDAO {
 
     public String getTime(){
         String now = null;
-        try(Connection connection = ConnectionUtill.INSTANCE.getConnection();
+        try(Connection connection = ConnectionUtil.INSTANCE.getConnection();
             PreparedStatement preparedStatement = connection.prepareStatement("select now()");
             ResultSet resultSet = preparedStatement.executeQuery();
         ){
@@ -26,7 +26,7 @@ public class TodoDAO {
     public String getTime2() throws Exception {
         String now = null;
         String sql = "select now()";
-        @Cleanup Connection connection = ConnectionUtill.INSTANCE.getConnection();
+        @Cleanup Connection connection = ConnectionUtil.INSTANCE.getConnection();
         @Cleanup PreparedStatement preparedStatement = connection.prepareStatement(sql);
         @Cleanup ResultSet resultSet = preparedStatement.executeQuery();
 
@@ -39,7 +39,7 @@ public class TodoDAO {
     public void insert(TodoVO vo) throws Exception {
         String sql = "insert into tbl_todo (title, dueDate, finished) values (?, ?, ?)";
 
-        @Cleanup Connection connection = ConnectionUtill.INSTANCE.getConnection();
+        @Cleanup Connection connection = ConnectionUtil.INSTANCE.getConnection();
         @Cleanup PreparedStatement preparedStatement = connection.prepareStatement(sql);
 
         preparedStatement.setString(1, vo.getTitle());
@@ -51,7 +51,7 @@ public class TodoDAO {
     public List<TodoVO> selectAll() throws Exception {
 
         String sql = "select * from tbl_todo";
-        @Cleanup Connection connection = ConnectionUtill.INSTANCE.getConnection();
+        @Cleanup Connection connection = ConnectionUtil.INSTANCE.getConnection();
         @Cleanup PreparedStatement preparedStatement = connection.prepareStatement(sql);
         @Cleanup ResultSet resultSet = preparedStatement.executeQuery();
 
@@ -69,7 +69,7 @@ public class TodoDAO {
 
         String sql = "select * from tbl_todo where tno = ?";
 
-        @Cleanup Connection connection = ConnectionUtill.INSTANCE.getConnection();
+        @Cleanup Connection connection = ConnectionUtil.INSTANCE.getConnection();
         @Cleanup PreparedStatement preparedStatement = connection.prepareStatement(sql);
 
         preparedStatement.setLong(1, tno);
@@ -85,7 +85,7 @@ public class TodoDAO {
     //TodoDAO의 삭제 기능 구현하기
     public void deleteOne(Long tno) throws Exception {
         String sql = "delete from tbl_todo where tno = ?";
-        @Cleanup Connection connection = ConnectionUtill.INSTANCE.getConnection();
+        @Cleanup Connection connection = ConnectionUtil.INSTANCE.getConnection();
         @Cleanup PreparedStatement preparedStatement = connection.prepareStatement(sql);
         preparedStatement.setLong(1, tno);
         preparedStatement.executeUpdate();
@@ -94,7 +94,7 @@ public class TodoDAO {
     public void updateOne(TodoVO todoVO) throws Exception {
         String sql = "update tbl_todo set title = ?, dueDate = ?, finished = ? where tno = ?";
 
-        @Cleanup Connection connection = ConnectionUtill.INSTANCE.getConnection();
+        @Cleanup Connection connection = ConnectionUtil.INSTANCE.getConnection();
         @Cleanup PreparedStatement preparedStatement = connection.prepareStatement(sql);
         preparedStatement.setString(1, todoVO.getTitle());
         preparedStatement.setDate(2, Date.valueOf(todoVO.getDueDate()));

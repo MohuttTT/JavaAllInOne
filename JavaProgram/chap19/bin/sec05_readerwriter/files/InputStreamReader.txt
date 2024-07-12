@@ -1,4 +1,0 @@
-InputStreamReaderTest 예제
-한글과 영문이 모두 포함되어 있습니다.
-Good Bye!!!
-MS949

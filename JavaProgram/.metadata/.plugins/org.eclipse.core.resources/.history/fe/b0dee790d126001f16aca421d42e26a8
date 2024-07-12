@@ -1,0 +1,10 @@
+package sec02_fileinputoutputstream.EX05_FileOutputStream_2;
+
+public class FileOutputStream_2 {
+
+	public static void main(String[] args) {
+		// TODO Auto-generated method stub
+
+	}
+
+}

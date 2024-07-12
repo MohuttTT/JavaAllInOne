@@ -1,0 +1,10 @@
+package sec05_readerwriter.EX04_InputStreamerReader_2;
+
+public class InputStreamerReader_2 {
+
+	public static void main(String[] args) {
+		// TODO Auto-generated method stub
+
+	}
+
+}

@@ -1,0 +1,28 @@
+package test;
+
+public class Test7_Student {
+    String name; // 학생 이름
+    int ban;     // 번호
+    int kor;     // 국어 점수
+    int eng;     // 영어 점수
+    int math;    // 수학 점수
+
+    // 생성자
+    public Test7_Student(String name, int ban, int kor, int eng, int math) {
+        this.name = name;
+        this.ban = ban;
+        this.kor = kor;
+        this.eng = eng;
+        this.math = math;
+    }
+    
+    // 총점 계산 메서드
+    public int getTotal() {
+        return kor + eng + math;
+    }
+
+    // 평균 계산 메서드
+    public float getAverage() {
+        return getTotal() / 3.0f; // 총점을 3으로 나눠서 평균을 구함
+    }
+}

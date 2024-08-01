@@ -12,9 +12,13 @@ import org.springframework.security.config.annotation.web.configurers.AbstractHt
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.access.AccessDeniedHandler;
+import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.security.web.authentication.rememberme.JdbcTokenRepositoryImpl;
 import org.springframework.security.web.authentication.rememberme.PersistentTokenRepository;
+import org.zerock.b01.security.handler.Custom403Handler;
 import org.zerock.b01.security.CustomUserDetailService;
+import org.zerock.b01.security.handler.CustomSocialLoginSuccessHandler;
 
 import javax.sql.DataSource;
 
@@ -35,6 +39,12 @@ public class CustomSecurityConfig {
         return new BCryptPasswordEncoder();
     }
 
+    // 소셜 로그인 성공 후 동작할 핸들러
+    @Bean
+    public AuthenticationSuccessHandler authenticationSuccessHandler() {
+        return new CustomSocialLoginSuccessHandler(passwordEncoder());
+    }
+
     // SecurityFilterChain -- HTTP 요청에 대한 보안 필터 체인을 정의하는 객체
     // HttpSecurity -- 보안 구성을 위한 메서드 제공
     @Bean
@@ -48,6 +58,12 @@ public class CustomSecurityConfig {
                     frm.loginPage("/member/login"); // -- 사용자 정의 로그인 페이지로 경로 설정
 
                 })
+                // OAuth2 방식을 사용한 소셜 로그인
+                .oauth2Login(oauth -> {
+                    oauth.loginPage("/member/login")   // -- oauth2 로그인할 수 있는 페이지 경로 설정
+                            .successHandler(authenticationSuccessHandler());
+                })
+
                 .csrf(  // CSRF 보호 기능 비활성화
                         AbstractHttpConfigurer::disable // 람다 메서드 참조 방식
                 )
@@ -60,9 +76,19 @@ public class CustomSecurityConfig {
                             .tokenValiditySeconds(60*60*24*30) // 토큰의 유효 기간 초 단위 설정
                     // 60초*60분*24시간*30일 => 30일 설정
                             .alwaysRemember(false); // remember-me 옵션을 명시적으로 선택하지 않아도 항상 기능을 활성화할지 여부 설정
-                });
+                    // false -- remember-me를 선택해야만 자동 로그인 기능을 사용하겠다고 활성화
+                })
+                .exceptionHandling(ex -> {  // Spring Security 예외 처리 구성
+                    ex.accessDeniedHandler(accessDeniedHandler());
+                    // accessDeniedHandler() 사용자 정의 접근 거부 핸들러를 반환하는 메서드 호출
+                })
         ;
         return http.build();
+    }
+
+    @Bean
+    public AccessDeniedHandler accessDeniedHandler() {
+        return new Custom403Handler();
     }
 
     // WebSecurityCustomizer -- Spring Security 웹 보안 설정을 커스터마이징 할 때 사용

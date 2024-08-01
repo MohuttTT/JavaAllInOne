@@ -80,6 +80,7 @@ public class BoardController {
     }*/
 
     // 글 조회 & 수정/삭제 화면
+    @PreAuthorize("isAuthenticated()")
     @GetMapping({"/read", "/modify"})
     public void read(Long bno, PageRequestDTO pageRequestDTO, Model model) {
         BoardDTO boardDTO = boardService.readOne(bno);
@@ -88,6 +89,13 @@ public class BoardController {
     }
 
     // 수정
+    @PreAuthorize("principal.username == #boardDTO.writer") // 인증된 사용자 username(id)와 게시글 작성자가 동일한 경우에만 메서드 호출
+    /*
+        SpEL에서 메소드 매개변수에 #을 이용하여 접근 가능
+        #boardDTO -- modify(매개변수 중 BoardDTO boardDTO)를 뜻함
+
+        현재 로그인한 사용자가 강제로 다른 게시글을 요청하여 수정하려고 해도 POST 방식으로 요청이 들어올 때 작성자와 인증 사용자가 다르면 접근 불허가
+    */
     @PostMapping("/modify")
     public String modify(PageRequestDTO pageRequestDTO,
                          @Valid BoardDTO boardDTO,
@@ -123,6 +131,7 @@ public class BoardController {
     }*/
 
     /* 게시글 삭제의 경우 첨부파일 삭제도 함께 진행되어야 하기 때문에 BoardDTO 인자 값을 받아 처리 */
+    @PreAuthorize("principal.username == #boardDTO.writer")
     @PostMapping("/remove")
     public String remove(BoardDTO boardDTO, RedirectAttributes redirectAttributes) {
 

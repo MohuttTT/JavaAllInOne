@@ -31,7 +31,7 @@ public enum ConnectionUtil {
 
         // HikariDataSource: 데이터 베이스 커넥션 풀을 관리하는 객체
         // HikariDataSource => 설정된 HikariConfig를 사용하여 실제 데이터베이스 연결 관리를 함
-       ds = new HikariDataSource(config);
+        ds = new HikariDataSource(config);
     }
     public Connection getConnection() throws Exception {
         return ds.getConnection();

@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
       layout:decorate="~{layout/basic.html}">
 
@@ -45,12 +46,20 @@
                                th:value="${#temporals.format(dto.modDate, 'yyyy-MM-dd HH:mm:ss')}" readonly>
                     </div>
 
-                    <div class="my-4">
+                    <!-- 사용자가 인증된 상태에서 특정 조건에 따라 버튼을 표시하는 기능 구현 -->
+                    <!--
+                        th:with="user=${#authentication.principal}" -- #authentication.principal 객체를 user 변수에 할당
+                    -->
+                    <div class="my-4" th:with="user=${#authentication.principal}">
                         <div class="float-end" th:with="link = ${pageRequestDTO.getLink()}">
                             <a th:href="|@{/board/list}?${link}|" class="text-decoration-none">
                                 <button type="button" class="btn btn-primary">List</button>
                             </a>
-                            <a th:href="|@{/board/modify(bno=${dto.bno})}&${link}|" class="text-decoration-none">
+                            <!-- 수정버튼 -- 게시글을 작성한 사람과 게시글을 수정하려는 사람이 동일한 경우에만 버튼 보일 수 있도록 설정 -->
+                            <!--
+                                th:if="${user != null && user.username == dto.writer}" -- 인증된 사용자가 존재하고, 그 사용자의 username이 게시물 작성자의 writer와 동일한 경우에만 링크 표시
+                            -->
+                            <a th:if="${user != null && user.username == dto.writer}" th:href="|@{/board/modify(bno=${dto.bno})}&${link}|" class="text-decoration-none">
                                 <button type="button" class="btn btn-secondary">Modify</button>
                             </a>
                         </div>
@@ -103,9 +112,13 @@
                         <span class="input-group-text">Reply Text</span>
                         <input type="text" class="form-control replyText">
                     </div>
-                    <div class="input-group mb-3">
+                    <!-- 댓글 추가 시 댓글의 작성자가 현재 로그인한 사용자가 되도록 고정 -->
+                    <!--
+                        th:with="user=${#authentication.principal}" -- #authentication.principal 객체를 user 변수에 할당
+                    -->
+                    <div class="input-group mb-3" th:with="user=${#authentication.principal}">
                         <span class="input-group-text">Replyer</span>
-                        <input type="text" class="form-control replyer">
+                        <input type="text" class="form-control replyer" th:value="${user.username}" readonly>
                     </div>
                 </div>
                 <div class="modal-footer">
@@ -148,6 +161,12 @@
 </div> <!--end layout fragment-->
 
 <script layout:fragment="script" th:inline="javascript">
+
+    // 현재 로그인한 사용자의 아이디를 변수로 지정
+    const currentUser = [[${#authentication.principal.username}]]
+    console.log(currentUser)
+
+
     // Axios 사용하여 서버에서 데이터를 가져오고, 이를 DOM에 반영하는 함수 정의
 
     const bno = [[${dto.bno}]];
@@ -354,6 +373,8 @@
             modifyText.value = reply.replyText // -- 모달 창 텍스트 영역에 댓글 내용 표시
             modifyModal.show() // -- 모달 창 화면에 표시
 
+            hasAuth = currentUser === reply.replyer;    // 댓글의 작성자와 현재 사용자 일치 여부 확인
+
         }).catch(e => alert('error')) // -- 예외 발생 시 경고창으로 error 알림 표시
 
     }, false);
@@ -362,6 +383,12 @@
     /* 댓글 수정과 화면 갱신 */
     // 댓글 수정 이벤트 리스너
     modifyBtn.addEventListener("click", function (e) {
+
+        if(!hasAuth) {
+            alert("댓글 작성자만 수정이 가능합니다.")
+            modifyModal.hide()
+            return
+        }
 
         /* 수정할 댓글 정보 객체 생성 */
         const replyObj = {
@@ -389,6 +416,12 @@
 
     /* 댓글 삭제 -- 삭제 후 댓글의 1페이지로 이동 */
     removeBtn.addEventListener("click", function (e) {
+
+        if(!hasAuth) {
+            alert("댓글 작성자만 삭제가 가능합니다.")
+            modifyModal.hide()
+            return
+        }
 
         removeReply(replyHeader.innerHTML).then(result => {
 
